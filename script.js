@@ -1,6 +1,12 @@
 document.addEventListener('DOMContentLoaded', function () {
     const addToCartBtn = document.getElementById('addToCartBtn');
+    const phoneNumberInput = document.getElementById('phoneNumber');
     const productCheckboxes = document.querySelectorAll('.product-checkbox');
+
+    const storedPhoneNumber = localStorage.getItem('phoneNumber');
+    if (storedPhoneNumber) {
+        phoneNumberInput.value = storedPhoneNumber;
+    }
 
     addToCartBtn.addEventListener('click', function () {
         const selectedProducts = [];
@@ -16,15 +22,19 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
 
-        if (selectedProducts.length > 0) {
+        const phoneNumber = phoneNumberInput.value;
+        if (selectedProducts.length > 0 && phoneNumber) {
             const whatsappMessage = selectedProducts.map(product => {
                 return `*${product.description}*\n${product.image}`;
             }).join('\n\n');
 
             const encodedMessage = encodeURIComponent(whatsappMessage);
-            window.open(`https://wa.me/96984008141?text=${encodedMessage}`, '_blank');
+            const whatsappLink = `https://wa.me/${phoneNumber.replace(/\D/g, '')}?text=${encodedMessage}`;
+            window.open(whatsappLink, '_blank');
+
+            localStorage.setItem('phoneNumber', phoneNumber);
         } else {
-            alert('Selecione pelo menos um produto para adicionar ao carrinho.');
+            alert('Preencha seu número de telefone e selecione pelo menos um produto.');
         }
     });
 });
